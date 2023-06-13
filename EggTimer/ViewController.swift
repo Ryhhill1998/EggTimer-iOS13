@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UIViewController {
     
     var eggTimer: Timer?
+    var initialTimer = 0
     
     let eggTimes = [
         "Soft": 300,
@@ -19,6 +20,12 @@ class ViewController: UIViewController {
     ]
     
     @IBOutlet weak var titleLabel: UILabel!
+    
+    @IBOutlet weak var progressBar: UIProgressView!
+    
+    override func viewDidLoad() {
+        setProgress(progress: 0)
+    }
     
     @IBAction func hardnessSelected(_ sender: UIButton) {
         eggTimer?.invalidate()
@@ -30,6 +37,8 @@ class ViewController: UIViewController {
         
         guard let timer = eggTimes[hardness] else { return }
         
+        initialTimer = timer
+        
         runTimer(seconds: timer)
     }
     
@@ -38,12 +47,22 @@ class ViewController: UIViewController {
         
         eggTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             secondsRemaining -= 1
-            print(secondsRemaining)
+            self.updateProgress(secondsLeft: secondsRemaining)
             
             if secondsRemaining == 0 {
                 timer.invalidate()
-                self.titleLabel.text = "Done"
+                self.titleLabel.text = "DONE!"
             }
         }
+    }
+    
+    func updateProgress(secondsLeft: Int) {
+        let secondsPassed = initialTimer - secondsLeft
+        let completion: Float = Float(secondsPassed) / Float(initialTimer)
+        setProgress(progress: completion)
+    }
+    
+    func setProgress(progress: Float) {
+        progressBar.progress = progress
     }
 }
