@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
     
+    var player: AVAudioPlayer?
     var eggTimer: Timer?
     var initialTimer = 0
     
@@ -35,6 +37,8 @@ class ViewController: UIViewController {
             return
         }
         
+        titleLabel.text = hardness
+        
         guard let timer = eggTimes[hardness] else { return }
         
         initialTimer = timer
@@ -52,6 +56,7 @@ class ViewController: UIViewController {
             if secondsRemaining == 0 {
                 timer.invalidate()
                 self.titleLabel.text = "DONE!"
+                self.playSound()
             }
         }
     }
@@ -64,5 +69,23 @@ class ViewController: UIViewController {
     
     func setProgress(progress: Float) {
         progressBar.progress = progress
+    }
+
+    func playSound() {
+        guard let url = Bundle.main.url(forResource: "alarm_sound", withExtension: "mp3") else { return }
+
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+
+            player = try AVAudioPlayer(contentsOf: url, fileTypeHint: AVFileType.mp3.rawValue)
+            
+            guard let player = player else { return }
+
+            player.play()
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }
