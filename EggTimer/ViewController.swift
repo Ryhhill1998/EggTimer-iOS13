@@ -10,13 +10,19 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    var eggTimer: Timer?
+    
     let eggTimes = [
         "Soft": 300,
         "Medium": 420,
         "Hard": 720
     ]
     
+    @IBOutlet weak var titleLabel: UILabel!
+    
     @IBAction func hardnessSelected(_ sender: UIButton) {
+        eggTimer?.invalidate()
+        
         guard let hardness = sender.currentTitle else
         {
             return
@@ -30,12 +36,13 @@ class ViewController: UIViewController {
     func runTimer(seconds: Int) {
         var secondsRemaining = seconds
         
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+        eggTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
             secondsRemaining -= 1
             print(secondsRemaining)
             
             if secondsRemaining == 0 {
                 timer.invalidate()
+                self.titleLabel.text = "Done"
             }
         }
     }
